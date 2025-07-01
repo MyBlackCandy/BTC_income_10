@@ -1,89 +1,30 @@
-# 🟢 BTC Income Bot (แจ้งเตือนรายการเข้า)
+# BTC Income Bot (10 Addresses)
 
-บอทตรวจสอบรายการธุรกรรม *ขาเข้าเท่านั้น* ของ Bitcoin (BTC) และแจ้งเตือนผ่าน Telegram โดยอัตโนมัติ
+A simple Telegram bot that monitors **up to 10 BTC addresses** and notifies the Telegram group when any income transaction is detected.
 
----
+## Features
+- Monitors BTC transactions via blockchain.info
+- Reports incoming transaction details (sender, receiver, amount, USD value)
+- Designed for Railway deployment
 
-## ✨ คุณสมบัติ
+## Environment Variables
+| Variable      | Description                        |
+|---------------|------------------------------------|
+| BOT_TOKEN     | Telegram bot token                 |
+| CHAT_ID       | Telegram chat ID (group/channel)   |
+| address_1~10  | BTC address to monitor (up to 10)  |
 
-- ตรวจจับเฉพาะธุรกรรม "เข้า" (Deposit) ของ BTC
-- รองรับสูงสุด 10 BTC Address
-- แสดงจำนวน BTC และมูลค่าเทียบเป็น USD (อ้างอิงจาก Binance)
-- แจ้งเตือนทุก 10 วินาทีผ่าน Telegram Bot
-- ใช้งานได้ทั้ง Railway หรือเครื่องเซิร์ฟเวอร์ของคุณ
+## Deploy on Railway
+1. Clone or upload this repo to Railway.
+2. Set the environment variables.
+3. Railway will auto-detect and start the bot.
 
----
-
-## 📲 รูปแบบการแจ้งเตือน
-
+## Requirements
 ```
-🟢 BTC 入金
-👤 จาก: 1A23...abc
-👥 ถึง: 1YourBTCaddress
-💰 0.01000000 BTC ≈ $584.21 USD
-🧾 TXID: abcdef1234567890...
-```
-
----
-
-## ⚙️ วิธีติดตั้งบน Railway
-
-### 1. อัปโหลดโค้ดไปยัง GitHub Repository ของคุณ
-
-ตัวอย่างโครงสร้างไฟล์:
-
-```
-btc_income_bot/
-├── bot.py
-├── requirements.txt
-└── README.md
+pip install -r requirements.txt
 ```
 
-### 2. สร้างโปรเจกต์ใหม่ใน Railway (Deploy from GitHub)
-
-### 3. ตั้งค่า Environment Variables
-
-| ชื่อตัวแปร            | ค่าที่ต้องใส่                          |
-|------------------------|-----------------------------------------|
-| `BOT_TOKEN`            | Token ของ Telegram Bot (จาก BotFather) |
-| `CHAT_ID`              | chat_id ของกลุ่มหรือบุคคล             |
-| `address_1` ถึง `address_10` | BTC Wallet Address ที่ต้องการติดตาม (สูงสุด 10 อัน) |
-
-> 🧠 คุณสามารถปล่อยว่างบาง address ได้หากต้องการติดตามน้อยกว่า 10 อัน
-
----
-
-## ▶️ ตั้งค่า Start Command
-
-```bash
+## Start the bot
+```
 python bot.py
 ```
-
----
-
-## 📦 requirements.txt
-
-```txt
-requests
-```
-
----
-
-## 🧪 ทดสอบก่อนใช้งาน
-
-- ใช้ wallet ฝั่งรับทำธุรกรรมจำลองเพื่อทดสอบ
-- ตรวจสอบว่า Chat ID ได้รับการแจ้งเตือนใน Telegram
-
----
-
-## ⚠️ หมายเหตุ
-
-- ข้อมูลราคา BTC ใช้จาก Binance
-- ไม่แจ้งเตือนรายการขาออก (เฉพาะ入金)
-- ไม่ต้องใช้ API Key สำหรับ BTC
-
----
-
-## 🧑‍💻 ผู้พัฒนา
-
-ออกแบบให้ใช้งานง่าย พร้อมใช้งานบน Railway หรือเครื่องส่วนตัว
