@@ -58,11 +58,12 @@ def main():
             if tx and tx.get("hash") and tx["hash"] != last_seen.get(address):
                 from_addr = tx.get("inputs", [{}])[0].get("prev_out", {}).get("addr", "不明")
                 usd = amount * btc_price
-                msg = f"🟢 *BTC 入金*
+                msg = f"""🟢 *BTC 入金*
 从: `{from_addr}`
-到: `{address}`
-💰 {amount:.8f} BTC ≈ ${usd:,.2f}
-TXID: `{tx['hash']}`"
+到: `{btc}`
+💰 {total:.8f} BTC ≈ ${usd_val:,.2f} USD
+📦 TXID: `{tx['hash']}`"""
+
                 send_message(msg)
                 last_seen[address] = tx["hash"]
         time.sleep(10)
