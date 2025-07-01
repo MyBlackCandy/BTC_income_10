@@ -1,4 +1,3 @@
-
 import os
 import time
 import requests
@@ -7,26 +6,25 @@ TG_TOKEN = os.getenv("BOT_TOKEN")
 TG_CHAT_ID = os.getenv("CHAT_ID")
 
 BTC_ADDRESSES = [
-    os.getenv('address_1', '').strip(),
-    os.getenv('address_2', '').strip(),
-    os.getenv('address_3', '').strip(),
-    os.getenv('address_4', '').strip(),
-    os.getenv('address_5', '').strip(),
-    os.getenv('address_6', '').strip(),
-    os.getenv('address_7', '').strip(),
-    os.getenv('address_8', '').strip(),
-    os.getenv('address_9', '').strip(),
-    os.getenv('address_10', '').strip(),
+    os.getenv("address_1", ""),
+    os.getenv("address_2", ""),
+    os.getenv("address_3", ""),
+    os.getenv("address_4", ""),
+    os.getenv("address_5", ""),
+    os.getenv("address_6", ""),
+    os.getenv("address_7", ""),
+    os.getenv("address_8", ""),
+    os.getenv("address_9", ""),
+    os.getenv("address_10", "")
 ]
 
-
-def send_message(text):
+def send_message(msg):
     url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
-    data = {"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "Markdown"}
+    data = {"chat_id": TG_CHAT_ID, "text": msg, "parse_mode": "Markdown"}
     try:
         requests.post(url, data=data)
     except Exception as e:
-        print("Telegram ERROR:", e)
+        print("Telegram Error:", e)
 
 def get_price():
     try:
@@ -36,36 +34,37 @@ def get_price():
         return 0
 
 def get_latest_btc_tx(address):
-    url = f"https://blockchain.info/rawaddr/{address}"
     try:
+        url = f"https://blockchain.info/rawaddr/{address}"
         r = requests.get(url).json()
         txs = r.get("txs", [])
         for tx in txs:
-            for out in tx["out"]:
+            for out in tx.get("out", []):
                 if out.get("addr") == address:
-                    return tx
+                    return tx, out["value"] / 1e8  # BTC value
     except:
         pass
-    return None
+    return None, None
 
 def main():
     last_seen = {}
     while True:
         btc_price = get_price()
-
-        for addr in BTC_ADDRESSES:
-            if not addr:
+        for address in BTC_ADDRESSES:
+            address = address.strip()
+            if not address:
                 continue
-            addr = addr.strip()
-            tx = get_latest_btc_tx(addr)
-            if tx and tx.get("hash") and tx["hash"] != last_seen.get(addr):
-                total = sum([out["value"] for out in tx["out"] if out.get("addr") == addr]) / 1e8
-                usd_val = total * btc_price
-                from_addr = tx.get("inputs", [{}])[0].get("prev_out", {}).get("addr", "unknown")
-                msg = "[BTC] 入金\n客户地址: `{}`\n我们地址: `{}`\n💰 {:.8f} BTC ≈ ${:,.2f} USD".format(
-                    from_addr, addr, total, usd_val)
+            tx, amount = get_latest_btc_tx(address)
+            if tx and tx.get("hash") and tx["hash"] != last_seen.get(address):
+                from_addr = tx.get("inputs", [{}])[0].get("prev_out", {}).get("addr", "不明")
+                usd = amount * btc_price
+                msg = f"🟢 *BTC 入金*
+从: `{from_addr}`
+到: `{address}`
+💰 {amount:.8f} BTC ≈ ${usd:,.2f}
+TXID: `{tx['hash']}`"
                 send_message(msg)
-                last_seen[addr] = tx["hash"]
+                last_seen[address] = tx["hash"]
         time.sleep(10)
 
 if __name__ == "__main__":
